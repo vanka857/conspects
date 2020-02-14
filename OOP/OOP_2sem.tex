@@ -1,0 +1,344 @@
+\documentclass[12pt, a5paper]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath, amssymb, amsfonts, amsthm}
+\usepackage[left=1.5cm,right=1cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+\usepackage{listings}
+\usepackage{color}
+
+\title{Конспекты по C++ \\\large Семестр 2}
+\author{Марк Тюков, Кудрявцев Иван}
+\date{Весна 2020 года}
+
+\begin{document}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.3,0.3,0.3}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ 
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=\true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=C++,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=8pt,                   % how far the line-numbers are from the code
+  numberstyle=\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{mygray},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=4,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+%%
+\maketitle
+\tableofcontents
+\newpage
+%%
+
+\section{Введение в язык}
+\subsection{Инструкции}
+
+\subsubsection{Declarations (объявления)}
+
+\textbf{Переменные}
+\begin{lstlisting}
+type id [= value];
+	
+\end{lstlisting}
+\
+\textbf{Примеры}
+ключается в стэк
+[unsigned] int/long long/char/float/double/long double/bool
+
+P.S.: size\_t $\equiv$ unsigned long long
+
+\
+
+\textbf{Функции, структуры}
+
+\begin{lstlisting}	
+void f(int x, double y){}
+struct S{};
+\end{lstlisting}
+
+P.S.: using vi = std::vector<int>;
+
+\paragraph{Declaration vs definition}
+
+!!! One definition rule (ODR)
+
+\subsubsection{Expressions}
+
+\textbf{Базовые операторы} 
+
+\begin{enumerate}
+	\item Арифметические операторы (+, -, $\ast$, /, $\%$) 
+	\item Побитовые операторы ($\&$, |, $\wedge$, $\sim$, $\ll$, $\gg$)
+	\item Логические операторы ($\&\&$, ||, !)
+	\item Операторы сравнения (==, <, >, <=, >=)
+%% ВСТАВИТЬ ПРО Lvalue И Rvalue
+	\item Assignments ($=$, $+=$, $-=$, $\ast=$, $/=$, $\%=$, $\&=$, $|=$, $\space\wedge$=, $\ll=$, $\gg=$)
+	\item Инкремент и декремент ($++x$, $x++$)
+	\item sizeof() - возвращает число, которое нужно для хранения входных данных (в байтах). Он не сохраняет результат операций. Например, $sizeof(x++)$ не изменит $x$
+	\item Тернарный оператор "... ? ... : ..."
+	\item Запятая -- выполняет левую часть, потом правую, возвращает правую. Она гарантирует, что левая часть закончит выполнение до того, как начнет выполняться правая. 
+\end{enumerate} 
+
+\subsubsection{Control statements}
+
+\begin{enumerate}
+	\item if (statement) {} else {}
+	\item while(statement){}
+	\item for (declaration or expression; bool expression; expression){}
+\end{enumerate}
+
+\subsection{Ошибки компиляции CE}
+\subsubsection{Лексические ошибки} неизвестный символ
+\subsubsection{Синтаксические ошибки} \texttt{if = 5)}
+\subsubsection{Семантические ошибки} ...
+
+\subsection{Ошибки выполнения RE - Runtime Error}
+\subsubsection{Segmentation fault - обращаемся к чужой памяти} 
+\begin{enumerate}
+\item заканчивается стек рекурсии
+\end{enumerate}
+
+\subsection{Undefined Behaviour} 
+Когда пишем что-то такое, на что компилятор в стандарте не имеет четкой инструкции.
+
+\begin{enumerate}
+\item обращение к массиву по несуществующему индексу. 
+\begin{lstlisting}
+int a[10];
+a[100]; 
+\end{lstlisting}
+	В таком случае можно получить как RE, так и UB 
+\end{enumerate}
+
+\textbf{Если в программе случился UB, то не гарантируется ничего}! 
+\\
+
+	(1 != 0) будет true
+
+
+\subsection{Linking error - ошибки линковщика}
+
+После компиляции, например что-то не объявлено.
+\\
+\\
+\textbf{Насколько плохи все эти ошибки?} 
+\\
+\textbf{CE} - компилятор наш друг
+\\
+\textbf{RE - плохо}, сервер может упасть/ может случиться что-то плохое во ВРЕМЯ ВЫПОЛНЕНИЯ
+\\
+\textbf{UB - ужасно!} не совершайте преступление, не делайте UB!
+\\
+\textit{UB и RE компилятор не блокирует зачастую при компиляции.
+}
+\section{Указатели. Массивы}
+\subsection{Pointers, Arrays, functions, etc}
+\subsubsection{Pointers}
+
+\begin{lstlisting}
+int x
+{
+	int y; // выделение памяти
+} // - удаление из памяти (на самом деле потеря адреса. Что происходит с данными по тому адресу - хз)
+
+type* p; 
+*p; // - унарная звездочка разыменовывания.
+
+type* p = &x; // - кладем в p адрес x
+p+1; p-1;
+\end{lstlisting}
+
+\subsubsection{Операции с указателями}
+\begin{enumerate}
+\item Разыменовывание
+\item Сложение с числами
+\item Разность указателей
+\end{enumerate}
+
+\textbf{void*} - указатель на несуществующую область памяти. Такие указатели нельзя увеличивать и вычитать друг из друга
+
+\begin{center}
+Но! указатели \textbf{можно преобразовывать}
+\end{center}
+
+\textbf{nullptr} - константный указатель (типа \textit{nullptr\_t}) - аналог нуля для указателей
+
+\texttt{*nullptr // - UB :)}
+
+\subsection{Arrays}
+
+type a[10] - выделение памяти на стэке для 10 элементов
+
+\subsubsection{Операции над массивами:} 
+\begin{enumerate}
+\item *(a+i) Возьми адрес, где начинается массив, прибавь к нему число i и разыменуй.
+\item Array to pointer conversion 
+\\
+\texttt{type* b = a;}
+\item \texttt{sizeof(a) = } размер массива * \texttt{sizeof(тип)}
+\\
+\texttt{sizeof(type*) != sizeof(a);}
+\end{enumerate}
+
+\subsection{Functions}
+
+\textbf{Сигнатура} - набор типов принимаемых аргументов.
+\\
+Можно объявить несколько функций с разными сигнатурами
+\begin{lstlisting}
+type f(int);
+type f(double);
+type f(int, int);
+\end{lstlisting}
+\begin{center}
+Эти функции могут возвращать данные разных типов
+\end{center}
+
+Компилятор при вызове таких функция совершает разрешение перегрузки \textbf{(overloading resolution)} - принятие решение о выборе версии функции
+
+\subsubsection{Overloading resolution}
+\begin{enumerate}
+\item В точности такой тип
+\item Преобразование в int
+\item Если не получается однозначно выбрать, будет ошибка компиляции \textbf{Ambiguous call}
+\end{enumerate}
+
+Пример f(float) вызываем, когда есть только от double и от int
+\begin{center}
+\textbf{Читать в стандарте!!!}
+\end{center}
+
+\subsubsection{Указатель на функцию}
+
+\begin{lstlisting}
+int f(double);
+int (*)(double) pf = f;
+
+type f(){
+}
+\end{lstlisting}
+
+\textbf{P.S.} Запятая при указании аргументов - устойчивая конструкция для аргументов, а не \textit{Expressions}
+\\
+\texttt{int a = 5;} 
+\\
+Здесь знак равно - это \textbf{не оператор присваивания}, а устойчивая конструкция инициализации!
+
+\subsubsection{Аргументы по умолчанию}
+Аргументы по умолчанию функций указываются \textbf{в конце}
+\\ \texttt{f(double x, int n = 10)}
+
+\subsubsection{Inline}
+Непосредственная \textbf{вставка кода} в указанное место \textbf{при компиляции}
+\\
+\texttt{inline} - лишь \textbf{рекомендации} компилятору (компилятор решает сам, он умный)
+
+
+\section{Статическая и динамическая память}
+\subsection{Cтатическая память}
+\subsubsection{static variables}
+\textbf{Свойства}
+\begin{enumerate}
+\item один раз заводятся
+\item размер вычисляет компилятор до запуска программы
+\item инициализируются один раз
+\item значение при разных вызовах функции сохраняются
+\end{enumerate}
+
+
+\subsection{Динамическая память - выдается по требованию}
+\subsubsection{операторы}
+\texttt{new, delete}
+\subsubsection{Переменная}
+\texttt{type* p = new type();} - запрашиваем память
+\\
+потом нужно \textbf{освободить}
+\\
+\texttt{delete p;}
+
+\subsubsection{Массив}
+\texttt{type* p = new type[n];} - запрашиваем память
+\\
+\texttt{delete[] p;}
+
+\begin{center}
+delete и new - expressions
+\end{center}
+
+\subsubsection{Некорректоное использование delete}
+\begin{enumerate}
+\item Delete не на тот указатель - UB
+\item delete без [] для массивов - UB
+\item Если не освобождать память возможны \textbf{memory leak}
+\item Если дважды удалить, то будет RE(Seg.F.)
+\end{enumerate}
+
+\textbf{P.S.}
+\\
+\texttt{delete p, pp;}
+\\
+Это \textbf{expression}. Парсится по запятой. Выполняется \texttt{delete p}. Потом \texttt{pp}.pp Не удалится ;
+
+\section{Ссылки}
+\subsection{Создание ссылки}
+
+\texttt{type x;}
+\\
+\texttt{type\& y = x;} - Новое название переменной. y - \textbf{ссылка} на x.
+
+\begin{lstlisting}
+swap(int x /* - создаем локальную КОПИЮ икса */, int y){
+	int t = x;
+	x = y;
+	y = t;
+} // - так не работает.
+
+type x;
+type y = x; // - Создаем ссылку. НО НЕ В С++. В Java - да 
+
+type x;
+type& y = x; - Новое название переменной. Y - ссылка на x. 
+\end{lstlisting}
+\begin{center}
+Отныне \textbf{нет способа отличить} y от x. Отныне и \textbf{навсегда}
+
+\textit{"Я поступил на физтех" = "Я поступил в МФТИ"}
+
+\end{center}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
